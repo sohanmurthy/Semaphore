@@ -70,6 +70,19 @@ Spirals
 *******************/
 
 class Spirals extends LXPattern {
+  
+  final int MAX_DOCS = 20;
+  final DiscreteParameter docs = new DiscreteParameter("Docs", 10, 1, MAX_DOCS);
+  
+  
+  Spirals(LX lx) {
+    super(lx);
+    addParameter(docs);
+    for (int i = 0; i <= MAX_DOCS; ++i) {
+      addLayer(new Wave(lx, i*6, i));
+    }
+  }
+  
   class Wave extends LXLayer {
     
     final private SinLFO rate1 = new SinLFO(200000*2, 290000*2, 17000);
@@ -86,9 +99,12 @@ class Spirals extends LXPattern {
 
     final private float hOffset;
     
-    Wave(LX lx, float o) {
+    final int num;
+    
+    Wave(LX lx, float o, int num) {
       super(lx);
       hOffset = o;
+      this.num = num;
       addModulator(rate1.randomBasis()).start();
       addModulator(rate2.randomBasis()).start();
       addModulator(rate3.randomBasis()).start();
@@ -101,6 +117,9 @@ class Spirals extends LXPattern {
     }
 
     public void run(double deltaMs) {
+      if (this.num > docs.getValuei()) {
+        return;
+      }
       for (LXPoint p : model.points) {
         
         float vy1 = model.yRange/4 * sin(off1.getValuef() + (p.x - model.cx) / wth1.getValuef());
@@ -120,12 +139,6 @@ class Spirals extends LXPattern {
    
   }
 
-  Spirals(LX lx) {
-    super(lx);
-    for (int i = 0; i < 10; ++i) {
-      addLayer(new Wave(lx, i*6));
-    }
-  }
 
   public void run(double deltaMs) {
     setColors(#000000);

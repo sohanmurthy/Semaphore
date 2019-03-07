@@ -58,10 +58,12 @@ class Effects extends LXEffect {
   
   class Wipe extends LXLayer {
     final LinearEnvelope pos = new LinearEnvelope(0, 1, wipeDecay);
-    
+    final float hue = random(0,360);
     private int direction = 0;
     private float cx = model.cy;
     private float cy = model.cx;
+    
+    
     
     Wipe(LX lx) {
       super(lx);
@@ -104,12 +106,12 @@ class Effects extends LXEffect {
         float b = min(1, 2-2*pos.getValuef()) * (100 - 10*dist);
         if (b > 0) {
             blendColor(p.index, LXColor.hsb(
-            lx.getBaseHuef(),
+            hue,
             50, 
             b), LXColor.Blend.ADD);
         }
       }
-      lx.cycleBaseHue(3*SECONDS);
+     
     }
     
   }

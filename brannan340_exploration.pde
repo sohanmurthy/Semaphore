@@ -32,8 +32,9 @@ void setup() {
     new Spirals(lx),
     //new Shadows(lx),
     new ColorSwatches(lx, 32),
+    new ColorSwatches(lx, 16),
 
-    //new IteratorTestPattern(lx),
+    new IteratorTestPattern(lx),
     //new BaseHuePattern(lx),
 
   });
@@ -51,7 +52,7 @@ void setup() {
   //output = buildOutput();
 
   // Adds UI elements -- COMMENT all of this out if running on Linux in a headless environment
-  size(800, 600, P3D);
+  size(1280, 720, P3D);
   lx.ui.addLayer(
     new UI3dContext(lx.ui)
     .setCenter(model.cx, model.cy, model.cz)
