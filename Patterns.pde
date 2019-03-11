@@ -71,8 +71,8 @@ Spirals
 
 class Spirals extends LXPattern {
   
-  final int MAX_DOCS = 20;
-  final DiscreteParameter docs = new DiscreteParameter("Docs", 10, 1, MAX_DOCS);
+  final int MAX_DOCS = 12;
+  final DiscreteParameter docs = new DiscreteParameter("Docs", 6, 1, MAX_DOCS);
   
   
   Spirals(LX lx) {
