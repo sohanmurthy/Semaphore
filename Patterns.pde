@@ -157,7 +157,7 @@ class Shadows extends LXPattern {
   final float vLow = 5;
   final float vHigh = 9;
   final int bright = 40;
-  final int num = 12;
+  final int num = 20;
   
   
   class LeftShadow extends LXLayer {
@@ -191,8 +191,8 @@ class Shadows extends LXPattern {
     }
 
     private void init() {
-      xPos.setValue(random(model.ax+5, model.ax+5));
-      yPos.setValue(random(model.yMin-5, model.yMax+5));  
+      xPos.setValue(random(model.xMin-3, model.xMin));
+      yPos.setValue(random(model.yMin, model.yMax));  
       xPos.setVelocity(random(vLow, vHigh));
       
     }
@@ -230,8 +230,8 @@ class Shadows extends LXPattern {
     }
 
     private void init() {
-      xPos.setValue(random(model.xMax-24, model.xMax-24));
-      yPos.setValue(random(model.yMin-5, model.yMax+5));  
+      xPos.setValue(random(model.cx, model.cx+2));
+      yPos.setValue(random(model.yMin, model.yMax));  
       xPos.setVelocity(random(-vHigh, -vLow));
       
     }
@@ -240,7 +240,7 @@ class Shadows extends LXPattern {
   Shadows(LX lx) {
     super(lx);
     for (int i = 0; i < num; ++i) {
-      //addLayer(new LeftShadow(lx));
+      addLayer(new LeftShadow(lx));
       addLayer(new RightShadow(lx));
       lx.cycleBaseHue(60*MINUTES);
     }
@@ -386,6 +386,80 @@ class DocStats extends LXPattern {
 
     private void init() {
       px.setRangeFromHereTo(random(model.xMin, model.xMax)).setPeriod(random(3800, 6000)).start();
+      py.setRangeFromHereTo(random(model.yMin, model.yMax)).setPeriod(random(3800, 6000)).start();
+    }
+    
+  }
+
+  public void run(double deltaMs) {
+    setColors(#000000);
+  }
+}
+
+
+class BlobStats extends LXPattern {
+  
+  
+  final int MAX_DOCS = 30;
+  final int bright = 60;
+  final DiscreteParameter docs = new DiscreteParameter("Docs", 7, 3, MAX_DOCS);
+  
+  BlobStats(LX lx) {
+    super(lx);
+    addParameter(docs);
+    for (int i = 0; i < MAX_DOCS; ++i) {
+      addLayer(new Doc(lx, i));
+    }
+  }
+
+  class Doc extends LXLayer {
+    
+    private final SinLFO interval = new SinLFO(7000, 13000, 28000);
+
+    //private final Click click = new Click(random(6000, 13000));
+    private final Click click = new Click(interval);
+    private final QuadraticEnvelope px = new QuadraticEnvelope(0, 0, 0).setEase(QuadraticEnvelope.Ease.BOTH);
+    private final QuadraticEnvelope py = new QuadraticEnvelope(0, 0, 0).setEase(QuadraticEnvelope.Ease.BOTH);
+      
+    private final SinLFO size = new SinLFO(4*INCHES, 10*INCHES, random(6000, 9600));
+    
+    final int num;
+
+    Doc(LX lx, int num) {
+      super(lx);
+      this.num = num;
+      addModulator(interval).start();
+      addModulator(click).start();
+      addModulator(px);
+      addModulator(py);
+      addModulator(size).start();
+      init();
+    }
+
+    public void run(double deltaMs) {
+      if (click.click()) {
+        init();
+      }   
+      if (this.num > docs.getValuei()) {
+        return;
+      }    
+      for (LXPoint p : model.points) {
+        
+        float b = bright - (bright / size.getValuef())*dist(p.x/2.2, p.y, px.getValuef(), py.getValuef());
+        float s = b/3;
+
+        if (b > 0) {
+          blendColor(p.index, LXColor.hsb(
+            (lx.getBaseHuef() + (p.y / model.yRange) * 67) % 360,
+            min(65, (100/s)*abs(p.y - py.getValuef())), 
+            b), LXColor.Blend.ADD);
+        }
+      }
+      lx.cycleBaseHue(7.125*MINUTES);
+    }
+
+    private void init() {
+      px.setRangeFromHereTo(random(model.xMin, model.cx)).setPeriod(random(3800, 6000)).start();
       py.setRangeFromHereTo(random(model.yMin, model.yMax)).setPeriod(random(3800, 6000)).start();
     }
     

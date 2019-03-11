@@ -1,6 +1,6 @@
 class Effects extends LXEffect {
   
-  final BoundedParameter wipeDecay = new BoundedParameter("WipDcy", 2000, 100, 4000);
+  final BoundedParameter wipeDecay = new BoundedParameter("WipDcy", 3000, 1000, 6000);
   
   final Wipe[] wipes;
   final int MAX_WIPES = 10;
@@ -59,6 +59,7 @@ class Effects extends LXEffect {
   class Wipe extends LXLayer {
     final LinearEnvelope pos = new LinearEnvelope(0, 1, wipeDecay);
     final float hue = random(0,360);
+    final float sat = random(40,90);
     private int direction = 0;
     private float cx = model.cy;
     private float cy = model.cx;
@@ -86,8 +87,8 @@ class Effects extends LXEffect {
       switch (direction) {
         case 0: pv = lerp(model.xMin, model.xMax, pvf); break;
         case 1: pv = lerp(model.xMax, model.xMin, pvf); break;
-        case 2: pv = lerp(model.yMin, model.yMax, pvf); break;
-        case 3: pv = lerp(model.yMax, model.yMin, pvf); break;
+        case 2: pv = lerp(model.yMin-10, model.yMax+10, pvf); break;
+        case 3: pv = lerp(model.yMax+10, model.yMin-10, pvf); break;
         case 4: pv = pvf * .7*model.xRange; break;
       }
       
@@ -107,7 +108,7 @@ class Effects extends LXEffect {
         if (b > 0) {
             blendColor(p.index, LXColor.hsb(
             hue,
-            50, 
+            sat, 
             b), LXColor.Blend.ADD);
         }
       }
