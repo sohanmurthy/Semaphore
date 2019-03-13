@@ -25,12 +25,9 @@ void setup() {
 
   lx.setPatterns(new LXPattern[] {
     
-    //new Interference(lx),
-    //new PatternTest(lx),
-    new DocStats(lx),
+    new BlobStats(lx),
     new Aurora(lx),
     new Spirals(lx),
-    //new Shadows(lx),
     new ColorSwatches(lx, 32),
     new ColorSwatches(lx, 16),
 
@@ -56,9 +53,10 @@ void setup() {
   lx.ui.addLayer(
     new UI3dContext(lx.ui)
     .setCenter(model.cx, model.cy, model.cz)
-    .setRadius(12*FEET)
-    .setTheta(PI/6)
-    .setPhi(PI/64)
+    .setRadius(10*FEET)
+    .setRadiusBounds(2*FEET, 20*FEET)
+    //.setTheta(PI/6)
+    //.setPhi(PI/64)
     .addComponent(pointCloud = new UIPointCloud(lx, model).setPointSize(4))
   );
   
