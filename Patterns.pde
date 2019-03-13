@@ -450,7 +450,7 @@ class BlobStats extends LXPattern {
 
         if (b > 0) {
           blendColor(p.index, LXColor.hsb(
-            (lx.getBaseHuef() + (p.y / model.yRange) * 67) % 360,
+            (lx.getBaseHuef() + (p.y / model.yRange) * 90) % 360,
             min(65, (100/s)*abs(p.y - py.getValuef())), 
             b), LXColor.Blend.ADD);
         }
@@ -572,4 +572,112 @@ class Interference extends LXPattern {
     lx.cycleBaseHue(7.86*MINUTES);
   }
 
+}
+
+
+
+class Lines extends LXPattern {
+      
+
+  final LinearEnvelope beat = new LinearEnvelope(0, 0, 1000);
+  
+  Lines(LX lx) {
+    super(lx);
+    for (int i = 0; i < 1; ++i) {
+      addLayer(new Line(lx, i));
+    }
+    addModulator(beat);
+  }
+  
+  public void run(double deltaMs) {
+    setColors(0);
+    
+  }
+  
+  class Line extends LXLayer {
+    
+    SinLFO r1 = new SinLFO(random(10, 15), random(12, 20), random(7000, 11000));
+    SinLFO r2 = new SinLFO(random(10, 15), random(12, 20), random(7000, 11000));
+    SinLFO r3 = new SinLFO(random(10, 15), random(12, 20), random(7000, 11000));
+    
+    SinLFO cx = new SinLFO(-2*FEET, 2*FEET,
+      startModulator(new SinLFO(9000, 19000, 23000).randomBasis())
+    );
+    
+    SinLFO cy = new SinLFO(-2*FEET, 2*FEET,
+      startModulator(new SinLFO(9000, 19000, 39000).randomBasis())
+    );
+    
+    SawLFO th = new SawLFO(0, TWO_PI,
+      startModulator(new SinLFO(7000, 17000, 31000).randomBasis())
+    );
+    
+    Line(LX lx, int i) {
+      super(lx);
+      startModulator(r1.randomBasis());
+      startModulator(r2.randomBasis());
+      startModulator(r3.randomBasis());
+      startModulator(th.randomBasis());
+      startModulator(cx.randomBasis());
+      startModulator(cy.randomBasis());
+      if (i % 2 == 1) {
+        th.setRange(TWO_PI, 0);
+      }
+    }
+    
+    private void line(float x1, float y1, float x2, float y2) {
+      float xt, yt;
+      if (x1 > x2) {
+        xt = x2; x2 = x1; x1 = xt;
+        yt = y2; y2 = y1; y1 = yt;
+      }
+      float EDGE = 20;
+      float LIP = 8;
+      float FADE = 12;
+      for (LXPoint p : model.points) {
+        if (p.x >= (x1-EDGE) && p.x <= (x2+EDGE)) {
+          float yv = lerp(y1, y2, (p.x-x1) / (x2-x1));
+          float b = min(100, min(LIP*(p.x-x1), LIP*(x2-p.x)));
+          b = b - FADE*abs(p.y - yv);
+          if (b > 0) {
+            blendColor(p.index, LXColor.hsb(
+            lx.getBaseHuef(),
+            45, 
+            b), LXColor.Blend.ADD);
+          }
+        }
+      }
+      if (y1 > y2) {
+        xt = x2; x2 = x1; x1 = xt;
+        yt = y2; y2 = y1; y1 = yt;
+      }
+      for (LXPoint p : model.points) {
+        if (p.y >= (y1-EDGE) && p.y <= (y2+EDGE)) {
+          float xv = lerp(x1, x2, (p.y - y1) / (y2-y1));
+          float b = min(100, min(LIP*(p.y-y1), LIP*(y2-p.y))); 
+          b = b - FADE*abs(p.x - xv);
+          if (b > 0) {
+            blendColor(p.index, LXColor.hsb(
+            lx.getBaseHuef(),
+            45, 
+            b), LXColor.Blend.ADD);
+          }
+        }
+      }
+    }
+    
+    public void run(double deltaMs) {
+
+      
+      float x1 = model.xMin+3;
+      float y1 = model.cy;
+      float x2 = model.cx;
+      float y2 = model.yMin;
+      float x3 = model.xMax-3;
+      float y3 = model.cy;
+      
+      line(x1, y1, x2, y2);
+      line(x2, y2, x3, y3);
+    }
+  }
 }

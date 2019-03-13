@@ -19,7 +19,7 @@ static class Model extends LXModel {
 
     Fixture() {
 
-      //angled tubes with an offsent
+      //angled tubes with an offset
       for (int i = 0; i < 8; i++) {
         addPoints(new TubeAngle((TUBE_XPOS*i)+TUBE_YPOS, TUBE_YPOS));
         addPoints(new TubeAngle((TUBE_XPOS*i)+(TUBE_XPOS/2), 0));
