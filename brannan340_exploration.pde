@@ -12,7 +12,8 @@ final static int FEET = 12*INCHES;
 final static int SECONDS = 1000;
 final static int MINUTES = 60*SECONDS;
 
-Model model;
+ComplexModel model;
+//SimpleModel model;
 P3LX lx;
 LXOutput output;
 UI3dComponent pointCloud;
@@ -20,7 +21,9 @@ Effects effects;
 
 void setup() {
 
-  model = new Model();
+  model = new ComplexModel();
+  //model = new SimpleModel();
+  
   lx = new P3LX(this, model);
 
   lx.setPatterns(new LXPattern[] {

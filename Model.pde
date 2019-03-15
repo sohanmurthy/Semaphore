@@ -2,16 +2,36 @@
 // 0.65625 inches between pixels = 60 LEDs per meter
 // 1.325 inches between pixels = 30 LEDs per meter
 
+/*
+SIMPLE
+  set TUBE_YPOS = 6
+      TUBE_XPOS = 18
+
+STAIRSTEP
+  set TUBE_YPOS = 6
+      TUBE_XPOS = 36
+      TUBE_XOFFSET = 9
+      TUBE_YOFFSET = -3
+
+CROSSHATCH
+  set TUBE_YPOS = 6
+      TUBE_XPOS = 36
+      TUBE_XOFFSET = 9
+      TUBE_YOFFSET = 12
+*/
+
 public static final int TUBE_PIXELS = 64;
 public static final float PIXEL_SPACING = 0.65625;
+
 public static final int TUBE_YPOS = 6;
-public static final int TUBE_XPOS = 18;
-public static final int TUBE_OFFSET = 18;
+public static final int TUBE_XPOS = 36;
+public static final int TUBE_XOFFSET = 9;
+public static final int TUBE_YOFFSET = -3;
 
 
-static class Model extends LXModel {
+static class ComplexModel extends LXModel {
 
-  Model() {
+  ComplexModel() {
     super(new Fixture());
   }
 
@@ -19,18 +39,43 @@ static class Model extends LXModel {
 
     Fixture() {
 
-      //angled tubes with an offset
-      for (int i = 0; i < 8; i++) {
+      for (int i = 0; i < 4; i++) {
         addPoints(new TubeAngle((TUBE_XPOS*i)+TUBE_YPOS, TUBE_YPOS));
         addPoints(new TubeAngle((TUBE_XPOS*i)+(TUBE_XPOS/2), 0));
       }
-      
 
-      
+      for (int i = 0; i < 4; i++) {
+        addPoints(new TubeAngle((TUBE_XPOS*i)+TUBE_YPOS+TUBE_XOFFSET+TUBE_YOFFSET, TUBE_YPOS+TUBE_YOFFSET));
+        addPoints(new TubeAngle((TUBE_XPOS*i)+(TUBE_XPOS/2)+TUBE_XOFFSET+TUBE_YOFFSET, TUBE_YOFFSET));
+      }
+ 
+    }
+  }
+}
+
+
+static class SimpleModel extends LXModel {
+
+  SimpleModel() {
+    super(new Fixture());
+  }
+
+  private static class Fixture extends LXAbstractFixture {
+
+    Fixture() {
+
+
+      for (int i = 0; i < 8; i++) {
+        addPoints(new TubeAngle((TUBE_XPOS*i)+TUBE_YPOS, TUBE_YPOS));
+        addPoints(new TubeAngle((TUBE_XPOS*i)+(TUBE_XPOS/2), 0));
+      }    
       
     }
   }
 }
+
+
+
 
 
 //Tubes that are oriented left-to-right in a 45 degree angle
