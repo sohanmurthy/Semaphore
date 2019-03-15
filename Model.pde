@@ -24,7 +24,7 @@ public static final int TUBE_PIXELS = 64;
 public static final float PIXEL_SPACING = 0.65625;
 
 public static final int TUBE_YPOS = 6;
-public static final int TUBE_XPOS = 36;
+public static final int TUBE_XPOS = 18;
 public static final int TUBE_XOFFSET = 9;
 public static final int TUBE_YOFFSET = -3;
 
