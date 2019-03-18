@@ -28,14 +28,16 @@ void setup() {
 
   lx.setPatterns(new LXPattern[] {
     
+    new HueTest(lx),
+    new IteratorTestPattern(lx),
     new BlobStats(lx),
     new Aurora(lx),
     new Spirals(lx),
     new ColorSwatches(lx, 32),
     new ColorSwatches(lx, 16),
 
-    new IteratorTestPattern(lx),
-    //new BaseHuePattern(lx),
+    
+    
 
   });
   
@@ -49,7 +51,7 @@ void setup() {
 
   //lx.enableAutoTransition(3*MINUTES);
 
-  //output = buildOutput();
+  output = buildOutput();
 
   // Adds UI elements -- COMMENT all of this out if running on Linux in a headless environment
   size(1280, 720, P3D);

@@ -1,4 +1,3 @@
-
 class UIEffects extends UIControlBucket {
   UIEffects(UI ui, float x, float y) {
     super(ui, "EFFECTS", x, y, UIChannelControl.WIDTH);
