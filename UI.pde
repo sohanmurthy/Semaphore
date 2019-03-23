@@ -5,7 +5,6 @@ class UIEffects extends UIControlBucket {
     addButton(effects.wipeRadial).setLabel("WipeR").setMomentary(true);
     addButton(effects.wipeVert).setLabel("WipeV").setMomentary(true);
     addButton(effects.wipeHoriz).setLabel("WipeH").setMomentary(true);
-    addKnob(effects.wipeDecay).setLabel("Dcy");
   }
 }
 
