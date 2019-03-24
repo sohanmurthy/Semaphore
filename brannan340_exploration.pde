@@ -1,9 +1,9 @@
 /********************************************************
-
-Exploration of model construction and effects triggers
-for a potential installation at Coda's 340 Branna office
-
-*********************************************************/
+ 
+ Exploration of model construction and effects triggers
+ for a potential installation at Coda's 340 Branna office
+ 
+ *********************************************************/
 
 //import ddf.minim.*;
 
@@ -19,24 +19,25 @@ UI3dComponent pointCloud;
 Effects effects;
 
 void setup() {
-
   model = new Model();
   lx = new P3LX(this, model);
 
   lx.setPatterns(new LXPattern[] {
-    
-    new BlobStats(lx),
-    new Aurora(lx),
-    new Spirals(lx),
-    new ColorSwatches(lx, 32),
-    new ColorSwatches(lx, 16),
 
-    new IteratorTestPattern(lx),
+    new BlobStats(lx), 
+    new Aurora(lx), 
+    new Spirals(lx), 
+    new ColorSwatches(lx, 32), 
+    new ColorSwatches(lx, 16), 
+
+    new IteratorTestPattern(lx), 
     //new BaseHuePattern(lx),
 
-  });
-  
+    });
+
   lx.addEffect(effects = new Effects(lx));
+
+  setupPubNubHandlers();
   
   final LXTransition multiply = new MultiplyTransition(lx).setDuration(5*SECONDS);
 
@@ -58,11 +59,10 @@ void setup() {
     //.setTheta(PI/6)
     //.setPhi(PI/64)
     .addComponent(pointCloud = new UIPointCloud(lx, model).setPointSize(4))
-  );
-  
+    );
+
   lx.ui.addLayer(new UIChannelControl(lx.ui, lx, 0, 0));
   lx.ui.addLayer(new UIEffects(lx.ui, 0, 320));
-
 }
 
 
