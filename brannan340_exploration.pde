@@ -24,6 +24,8 @@ void setup() {
 
   lx.setPatterns(new LXPattern[] {
 
+    //new Interference(lx),
+    new Lines(lx),
     new Waterfall(lx),
     new Blobs(lx), 
     new Aurora(lx), 

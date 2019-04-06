@@ -296,16 +296,20 @@ class Waterfall extends LXPattern {
   
  
   //private final SinLFO speed = new SinLFO(2600, 4800, 16000);
-  private final float speed = 4800;
+  private final float speed = 1000;
   private final SawLFO move = new SawLFO(TWO_PI, 0, speed);
   //private final SinLFO tight = new SinLFO(36, 16, 18000);
-  private final int tight = 16;
+  private final int tight = 12;
+  final private SinLFO rate1 = new SinLFO(200000, 290000, 17000);
+  final private SinLFO off1 = new SinLFO(-4*TWO_PI, 4*TWO_PI, rate1);
   
   
   Waterfall(LX lx) {
     super(lx);
     //addModulator(tight).start();
     //addModulator(speed).start();
+    addModulator(rate1).start();
+    addModulator(off1).start();
     addModulator(move).start();
 
   }
@@ -316,9 +320,12 @@ class Waterfall extends LXPattern {
       
       //"+" or "-" before move function changes direction
       float dy = (abs(p.y - model.yMax) ) / model.yRange; //original
-      //float dy = (abs(p.y - model.yMax) 0.1 * abs(p.y - model.yMin)) / model.yRange; //angled
+      //float dy = ((abs(p.x - model.cx)) / model.xRange) + ((abs(p.y - model.cy)) / model.yRange) ; //chevrons
+      
+      //float dy = abs(p.y - model.yMax)/ model.yRange * sin(off1.getValuef() + (p.x - model.cx) / 15);
       
       float b = 50 + 50 * sin(dy * tight + move.getValuef());
+      
       colors[p.index] = LXColor.hsb(
       (lx.getBaseHuef() + (p.y / model.yRange) * 33) % 360,
       100,
@@ -342,7 +349,7 @@ class Lines extends LXPattern {
   
   Lines(LX lx) {
     super(lx);
-    for (int i = 0; i < 1; ++i) {
+    for (int i = 0; i < 3; ++i) {
       addLayer(new Line(lx, i));
     }
     addModulator(beat);
@@ -359,11 +366,24 @@ class Lines extends LXPattern {
     SinLFO r2 = new SinLFO(random(10, 15), random(12, 20), random(7000, 11000));
     SinLFO r3 = new SinLFO(random(10, 15), random(12, 20), random(7000, 11000));
     
-    SinLFO cx = new SinLFO(-2*FEET, 2*FEET,
+    SinLFO cx = new SinLFO(model.xMin, model.cx-20,
       startModulator(new SinLFO(9000, 19000, 23000).randomBasis())
     );
     
-    SinLFO cy = new SinLFO(-2*FEET, 2*FEET,
+    SinLFO cx2 = new SinLFO(model.cx+20, model.xMax,
+      startModulator(new SinLFO(9000, 19000, 23000).randomBasis())
+    );
+    
+    SinLFO cy = new SinLFO(model.xMin, model.yMax,
+      startModulator(new SinLFO(9000, 19000, 39000).randomBasis())
+    );
+    
+    SinLFO cy1 = new SinLFO(model.xMin, model.yMax,
+      startModulator(new SinLFO(9000, 19000, 39000).randomBasis())
+    );
+    
+    
+    SinLFO cy2 = new SinLFO(model.xMin, model.yMax,
       startModulator(new SinLFO(9000, 19000, 39000).randomBasis())
     );
     
@@ -378,7 +398,10 @@ class Lines extends LXPattern {
       startModulator(r3.randomBasis());
       startModulator(th.randomBasis());
       startModulator(cx.randomBasis());
+      startModulator(cx2.randomBasis());
       startModulator(cy.randomBasis());
+      startModulator(cy1.randomBasis());
+      startModulator(cy2.randomBasis());
       if (i % 2 == 1) {
         th.setRange(TWO_PI, 0);
       }
@@ -393,16 +416,18 @@ class Lines extends LXPattern {
       float EDGE = 20;
       float LIP = 8;
       float FADE = 12;
+      
       for (LXPoint p : model.points) {
         if (p.x >= (x1-EDGE) && p.x <= (x2+EDGE)) {
           float yv = lerp(y1, y2, (p.x-x1) / (x2-x1));
-          float b = min(100, min(LIP*(p.x-x1), LIP*(x2-p.x)));
+          float b = min(100, min(LIP*(p.x-x1), LIP*(x2-p.x)));          
           b = b - FADE*abs(p.y - yv);
+          float s = b/3 - FADE*abs(p.y - yv);
           if (b > 0) {
             blendColor(p.index, LXColor.hsb(
             lx.getBaseHuef(),
-            45, 
-            b), LXColor.Blend.ADD);
+            min(100, abs(s)), 
+            b), LXColor.Blend.LIGHTEST);
           }
         }
       }
@@ -413,13 +438,14 @@ class Lines extends LXPattern {
       for (LXPoint p : model.points) {
         if (p.y >= (y1-EDGE) && p.y <= (y2+EDGE)) {
           float xv = lerp(x1, x2, (p.y - y1) / (y2-y1));
-          float b = min(100, min(LIP*(p.y-y1), LIP*(y2-p.y))); 
+          float b = min(100, min(LIP*(p.y-y1), LIP*(y2-p.y)));
           b = b - FADE*abs(p.x - xv);
+          float s = b/3 - FADE*abs(p.x - xv);
           if (b > 0) {
             blendColor(p.index, LXColor.hsb(
             lx.getBaseHuef(),
-            45, 
-            b), LXColor.Blend.ADD);
+            min(100, abs(s)), 
+            b), LXColor.Blend.LIGHTEST);
           }
         }
       }
@@ -428,15 +454,80 @@ class Lines extends LXPattern {
     public void run(double deltaMs) {
 
       
-      float x1 = model.xMin+3;
-      float y1 = model.cy;
+      float x1 = cx.getValuef();
+      float y1 = cy.getValuef();
       float x2 = model.cx;
-      float y2 = model.yMin;
-      float x3 = model.xMax-3;
-      float y3 = model.cy;
+      float y2 = cy1.getValuef();
+      float x3 = cx2.getValuef();
+      float y3 = cy2.getValuef();
       
       line(x1, y1, x2, y2);
       line(x2, y2, x3, y3);
     }
   }
+}
+
+
+/************
+
+Interference
+
+*************/
+
+class Interference extends LXPattern {
+
+      class Concentric extends LXLayer{
+
+        private final SinLFO sync = new SinLFO(13*SECONDS,21*SECONDS, 34*SECONDS); //not invoked
+        private final SinLFO speed = new SinLFO(3200,3200, sync); //no oscillation
+        private final SinLFO tight = new SinLFO(15,15, sync); //no oscillation
+
+        private final TriangleLFO cy = new TriangleLFO(model.yMin, model.yMax, random(2*MINUTES+sync.getValuef(),3*MINUTES+sync.getValuef())); //not invoked
+        private final SawLFO move = new SawLFO(TWO_PI, 0, speed);
+        
+        private final TriangleLFO hue = new TriangleLFO(0,88, sync);
+
+        private final float cx;
+        private final int slope = 50;
+
+        Concentric(LX lx, float x){
+        super(lx);
+        cx = x;
+        addModulator(sync.randomBasis()).start();
+        addModulator(speed.randomBasis()).start();
+        addModulator(tight.randomBasis()).start();
+        addModulator(move.randomBasis()).start();
+        addModulator(hue.randomBasis()).start();
+        addModulator(cy.randomBasis()).start();
+        }
+
+         public void run(double deltaMs) {
+           for(LXPoint p : model.points) {
+           //float dx = (dist(p.x, p.y, cx, model.yMax))/ slope;
+           float dx = dist(p.x, p.y*2, cx, model.yMax*2)/ model.yRange;
+           float ds = (dist(p.x, p.y, cx, model.yMax))/ (slope/1.1);
+           float b = 33 + 33 * sin(dx * tight.getValuef() + move.getValuef());
+           float s = 50 + 50 * sin(ds * tight.getValuef()/1.3 + move.getValuef());;
+             blendColor(p.index, LXColor.hsb(
+             lx.getBaseHuef()+hue.getValuef(),
+             
+             s,
+             b
+             ), LXColor.Blend.ADD);
+           }
+         }
+      }
+
+  Interference(LX lx){
+    super(lx);
+    //addLayer(new Concentric(lx, model.xMin));
+    addLayer(new Concentric(lx, model.cx));
+    //addLayer(new Concentric(lx, model.xMax));
+  }
+
+  public void run(double deltaMs) {
+    setColors(#000000);
+    lx.cycleBaseHue(7.86*MINUTES);
+  }
+
 }
