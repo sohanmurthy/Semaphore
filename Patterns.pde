@@ -349,7 +349,7 @@ class Lines extends LXPattern {
   
   Lines(LX lx) {
     super(lx);
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 1; ++i) {
       addLayer(new Line(lx, i));
     }
     addModulator(beat);

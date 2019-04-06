@@ -85,8 +85,8 @@ class Effects extends LXEffect {
       float pv = 0;
       float pvf = 1 - (1-pos.getValuef())*(1-pos.getValuef());
       switch (direction) {
-        case 0: pv = lerp(model.xMin, model.xMax, pvf); break;
-        case 1: pv = lerp(model.xMax, model.xMin, pvf); break;
+        case 0: pv = lerp(model.xMin-10, model.xMax, pvf); break;
+        case 1: pv = lerp(model.xMax+10, model.xMin, pvf); break;
         case 2: pv = lerp(model.yMin-10, model.yMax+10, pvf); break;
         case 3: pv = lerp(model.yMax+10, model.yMin-10, pvf); break;
         case 4: pv = pvf * .7*model.xRange; break;
