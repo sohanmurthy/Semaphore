@@ -292,59 +292,14 @@ class Blobs extends LXPattern {
 
 
 
-class Waterfall extends LXPattern {
-  
- 
-  //private final SinLFO speed = new SinLFO(2600, 4800, 16000);
-  private final float speed = 1000;
-  private final SawLFO move = new SawLFO(TWO_PI, 0, speed);
-  //private final SinLFO tight = new SinLFO(36, 16, 18000);
-  private final int tight = 12;
-  final private SinLFO rate1 = new SinLFO(200000, 290000, 17000);
-  final private SinLFO off1 = new SinLFO(-4*TWO_PI, 4*TWO_PI, rate1);
-  
-  
-  Waterfall(LX lx) {
-    super(lx);
-    //addModulator(tight).start();
-    //addModulator(speed).start();
-    addModulator(rate1).start();
-    addModulator(off1).start();
-    addModulator(move).start();
-
-  }
-  
-  public void run(double deltaMs) {
-    for (LXPoint p : model.points) {
-     
-      
-      //"+" or "-" before move function changes direction
-      float dy = (abs(p.y - model.yMax) ) / model.yRange; //original
-      //float dy = ((abs(p.x - model.cx)) / model.xRange) + ((abs(p.y - model.cy)) / model.yRange) ; //chevrons
-      
-      //float dy = abs(p.y - model.yMax)/ model.yRange * sin(off1.getValuef() + (p.x - model.cx) / 15);
-      
-      float b = 50 + 50 * sin(dy * tight + move.getValuef());
-      
-      colors[p.index] = LXColor.hsb(
-      (lx.getBaseHuef() + (p.y / model.yRange) * 33) % 360,
-      100,
-      b);
-
-    }
-    
-  lx.cycleBaseHue(6*MINUTES);
-    
-  }
-}
-
 
 
 
 
 class Wingbeats extends LXPattern {
-      
   
+  
+    
   Wingbeats(LX lx) {
     super(lx);
     addLayer(new Wing(lx));
@@ -356,33 +311,38 @@ class Wingbeats extends LXPattern {
   
   class Wing extends LXLayer {
     
-    float ds = 1000; //set length of downstroke
-    //final private SawLFO ds  = new SawLFO(1400, 1400, 120000);
-    //final private SinLFO wingBeat = new SinLFO(ds, ds.getValue()*4, ds.getValue()*2);
-    final private SinLFO wingBeat = new SinLFO(ds, ds*4, ds*2);
-       
-    final private SinLFO leftWingX = new SinLFO(model.xMin, model.cx-15,
+    private final Click click = new Click(10*SECONDS);
+    private final SinLFO wingBeat = new SinLFO(1000, 4000, 2000);
+    
+    private final SinLFO leftWingX = new SinLFO(model.xMin, model.cx-15,
       startModulator(new SinLFO(9000, 19000, 23000).randomBasis())
     );
     
-    final private SinLFO rightWingX = new SinLFO(model.cx+15, model.xMax,
+    private final SinLFO rightWingX = new SinLFO(model.cx+15, model.xMax,
       startModulator(new SinLFO(9000, 19000, 23000).randomBasis())
     );
     
-    final private SinLFO wingCenterY = new SinLFO(model.cy+10, model.cy-10, wingBeat);
-    final private SinLFO wingTipY = new SinLFO(model.yMin, model.yMax, wingBeat);
+    private final SinLFO wingCenterY = new SinLFO(model.cy+10, model.cy-10, wingBeat);
+    private final SinLFO wingTipY = new SinLFO(model.yMin, model.yMax, wingBeat);
     
 
     
     Wing(LX lx) {
       super(lx);
-      //addModulator(ds).start();
-      startModulator(wingBeat);
+      addModulator(click).start();
+      startModulator(wingBeat);      
       startModulator(wingCenterY);
-      startModulator(wingTipY);
+      addModulator(wingTipY).start();
       startModulator(leftWingX.randomBasis());
       startModulator(rightWingX.randomBasis());
-      
+      init();
+    }
+
+    private void init() {
+    final float ds = random(800,1200);
+      wingBeat.setStartValue(ds).setEndValue(ds*4).setPeriod(ds*2);
+      println(ds);
+ 
     }
     
     private void line(float x1, float y1, float x2, float y2) {
@@ -430,8 +390,11 @@ class Wingbeats extends LXPattern {
     }
     
     public void run(double deltaMs) {
-
       
+      if (click.click()) {
+        init();
+      } 
+ 
       float x1 = leftWingX.getValuef();
       float y1 = wingTipY.getValuef();
       float x2 = model.cx;
@@ -441,72 +404,8 @@ class Wingbeats extends LXPattern {
       
       line(x1, y1, x2, y2);
       line(x2, y2, x3, y3);
+     
     }
     
   }
-}
-
-
-/************
-
-Interference
-
-*************/
-
-class Interference extends LXPattern {
-
-      class Concentric extends LXLayer{
-
-        private final SinLFO sync = new SinLFO(13*SECONDS,21*SECONDS, 34*SECONDS); //not invoked
-        private final SinLFO speed = new SinLFO(3200,3200, sync); //no oscillation
-        private final SinLFO tight = new SinLFO(15,15, sync); //no oscillation
-
-        private final TriangleLFO cy = new TriangleLFO(model.yMin, model.yMax, random(2*MINUTES+sync.getValuef(),3*MINUTES+sync.getValuef())); //not invoked
-        private final SawLFO move = new SawLFO(TWO_PI, 0, speed);
-        
-        private final TriangleLFO hue = new TriangleLFO(0,88, sync);
-
-        private final float cx;
-        private final int slope = 50;
-
-        Concentric(LX lx, float x){
-        super(lx);
-        cx = x;
-        addModulator(sync.randomBasis()).start();
-        addModulator(speed.randomBasis()).start();
-        addModulator(tight.randomBasis()).start();
-        addModulator(move.randomBasis()).start();
-        addModulator(hue.randomBasis()).start();
-        addModulator(cy.randomBasis()).start();
-        }
-
-         public void run(double deltaMs) {
-           for(LXPoint p : model.points) {
-           //float dx = (dist(p.x, p.y, cx, model.yMax))/ slope;
-           float dx = dist(p.x, p.y*2, cx, model.yMax*2)/ model.yRange;
-           float ds = (dist(p.x, p.y, cx, model.yMax))/ (slope/1.1);
-           float b = 33 + 33 * sin(dx * tight.getValuef() + move.getValuef());
-           float s = 50 + 50 * sin(ds * tight.getValuef()/1.3 + move.getValuef());;
-             blendColor(p.index, LXColor.hsb(
-             lx.getBaseHuef()+hue.getValuef(),
-             
-             s,
-             b
-             ), LXColor.Blend.ADD);
-           }
-         }
-      }
-
-  Interference(LX lx){
-    super(lx);
-    //addLayer(new Concentric(lx, model.xMin));
-    addLayer(new Concentric(lx, model.cx));
-    //addLayer(new Concentric(lx, model.xMax));
-  }
-
-  public void run(double deltaMs) {
-    setColors(#000000);
-    lx.cycleBaseHue(7.86*MINUTES);
-  }
-
 }
