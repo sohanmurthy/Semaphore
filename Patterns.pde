@@ -215,7 +215,9 @@ class Aurora extends LXPattern {
 
 
 
-
+/******************
+Blobs
+*******************/
 
 class Blobs extends LXPattern {
   
@@ -292,9 +294,9 @@ class Blobs extends LXPattern {
 
 
 
-
-
-
+/******************
+Wingbeats
+*******************/
 
 class Wingbeats extends LXPattern {
   
@@ -306,13 +308,14 @@ class Wingbeats extends LXPattern {
   }
   
   public void run(double deltaMs) {
-    LXColor.scaleBrightness(colors, max(0, (float) (1 - deltaMs / 600.f)), null);
+    LXColor.scaleBrightness(colors, max(0, (float) (1 - deltaMs / 800.f)), null);
   }
   
   class Wing extends LXLayer {
     
-    private final Click click = new Click(10*SECONDS);
-    private final SinLFO wingBeat = new SinLFO(1000, 4000, 2000);
+    private final SinLFO interval = new SinLFO(10*SECONDS, 12*SECONDS, 5*MINUTES);
+    private final Click click = new Click(interval);
+    //private final SinLFO wingBeat = new SinLFO(1000, 4000, 2000);
     
     private final SinLFO leftWingX = new SinLFO(model.xMin, model.cx-15,
       startModulator(new SinLFO(9000, 19000, 23000).randomBasis())
@@ -322,15 +325,21 @@ class Wingbeats extends LXPattern {
       startModulator(new SinLFO(9000, 19000, 23000).randomBasis())
     );
     
-    private final SinLFO wingCenterY = new SinLFO(model.cy+10, model.cy-10, wingBeat);
-    private final SinLFO wingTipY = new SinLFO(model.yMin, model.yMax, wingBeat);
+    private final SinLFO wingCenterX = new SinLFO(model.cx-20, model.cx+20,
+      startModulator(new SinLFO(20*SECONDS, 40*SECONDS, 2*MINUTES).randomBasis())
+     );
+     
+    private final SinLFO wingCenterY = new SinLFO(model.cy+10, model.cy-10, 1000);
+    private final SinLFO wingTipY = new SinLFO(model.yMin, model.yMax, 1000);
     
 
     
     Wing(LX lx) {
       super(lx);
+      addModulator(interval).start();
       addModulator(click).start();
-      startModulator(wingBeat);      
+      //startModulator(wingBeat);      
+      addModulator(wingCenterX).start();
       startModulator(wingCenterY);
       addModulator(wingTipY).start();
       startModulator(leftWingX.randomBasis());
@@ -339,9 +348,10 @@ class Wingbeats extends LXPattern {
     }
 
     private void init() {
-    final float ds = random(800,1200);
-      wingBeat.setStartValue(ds).setEndValue(ds*4).setPeriod(ds*2);
-      println(ds);
+    final float ds = random(1600,3200);
+      wingCenterY.setPeriod(ds);
+      wingTipY.setPeriod(ds);
+      println(ds, interval.getValue());
  
     }
     
@@ -397,7 +407,7 @@ class Wingbeats extends LXPattern {
  
       float x1 = leftWingX.getValuef();
       float y1 = wingTipY.getValuef();
-      float x2 = model.cx;
+      float x2 = wingCenterX.getValuef();
       float y2 = wingCenterY.getValuef();
       float x3 = rightWingX.getValuef();
       float y3 = wingTipY.getValuef();
