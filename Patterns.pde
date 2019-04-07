@@ -342,69 +342,47 @@ class Waterfall extends LXPattern {
 
 
 
-class Lines extends LXPattern {
+class Wingbeats extends LXPattern {
       
-
-  final LinearEnvelope beat = new LinearEnvelope(0, 0, 1000);
   
-  Lines(LX lx) {
+  Wingbeats(LX lx) {
     super(lx);
-    for (int i = 0; i < 1; ++i) {
-      addLayer(new Line(lx, i));
-    }
-    addModulator(beat);
+    addLayer(new Wing(lx));
   }
   
   public void run(double deltaMs) {
-    setColors(0);
-    
+    LXColor.scaleBrightness(colors, max(0, (float) (1 - deltaMs / 600.f)), null);
   }
   
-  class Line extends LXLayer {
+  class Wing extends LXLayer {
     
-    SinLFO r1 = new SinLFO(random(10, 15), random(12, 20), random(7000, 11000));
-    SinLFO r2 = new SinLFO(random(10, 15), random(12, 20), random(7000, 11000));
-    SinLFO r3 = new SinLFO(random(10, 15), random(12, 20), random(7000, 11000));
-    
-    SinLFO cx = new SinLFO(model.xMin, model.cx-20,
+    float ds = 1000; //set length of downstroke
+    //final private SawLFO ds  = new SawLFO(1400, 1400, 120000);
+    //final private SinLFO wingBeat = new SinLFO(ds, ds.getValue()*4, ds.getValue()*2);
+    final private SinLFO wingBeat = new SinLFO(ds, ds*4, ds*2);
+       
+    final private SinLFO leftWingX = new SinLFO(model.xMin, model.cx-15,
       startModulator(new SinLFO(9000, 19000, 23000).randomBasis())
     );
     
-    SinLFO cx2 = new SinLFO(model.cx+20, model.xMax,
+    final private SinLFO rightWingX = new SinLFO(model.cx+15, model.xMax,
       startModulator(new SinLFO(9000, 19000, 23000).randomBasis())
     );
     
-    SinLFO cy = new SinLFO(model.xMin, model.yMax,
-      startModulator(new SinLFO(9000, 19000, 39000).randomBasis())
-    );
+    final private SinLFO wingCenterY = new SinLFO(model.cy+10, model.cy-10, wingBeat);
+    final private SinLFO wingTipY = new SinLFO(model.yMin, model.yMax, wingBeat);
     
-    SinLFO cy1 = new SinLFO(model.xMin, model.yMax,
-      startModulator(new SinLFO(9000, 19000, 39000).randomBasis())
-    );
+
     
-    
-    SinLFO cy2 = new SinLFO(model.xMin, model.yMax,
-      startModulator(new SinLFO(9000, 19000, 39000).randomBasis())
-    );
-    
-    SawLFO th = new SawLFO(0, TWO_PI,
-      startModulator(new SinLFO(7000, 17000, 31000).randomBasis())
-    );
-    
-    Line(LX lx, int i) {
+    Wing(LX lx) {
       super(lx);
-      startModulator(r1.randomBasis());
-      startModulator(r2.randomBasis());
-      startModulator(r3.randomBasis());
-      startModulator(th.randomBasis());
-      startModulator(cx.randomBasis());
-      startModulator(cx2.randomBasis());
-      startModulator(cy.randomBasis());
-      startModulator(cy1.randomBasis());
-      startModulator(cy2.randomBasis());
-      if (i % 2 == 1) {
-        th.setRange(TWO_PI, 0);
-      }
+      //addModulator(ds).start();
+      startModulator(wingBeat);
+      startModulator(wingCenterY);
+      startModulator(wingTipY);
+      startModulator(leftWingX.randomBasis());
+      startModulator(rightWingX.randomBasis());
+      
     }
     
     private void line(float x1, float y1, float x2, float y2) {
@@ -413,9 +391,9 @@ class Lines extends LXPattern {
         xt = x2; x2 = x1; x1 = xt;
         yt = y2; y2 = y1; y1 = yt;
       }
-      float EDGE = 20;
-      float LIP = 8;
-      float FADE = 12;
+      float EDGE = 40;
+      float LIP = 20;
+      float FADE = 10;
       
       for (LXPoint p : model.points) {
         if (p.x >= (x1-EDGE) && p.x <= (x2+EDGE)) {
@@ -454,16 +432,17 @@ class Lines extends LXPattern {
     public void run(double deltaMs) {
 
       
-      float x1 = cx.getValuef();
-      float y1 = cy.getValuef();
+      float x1 = leftWingX.getValuef();
+      float y1 = wingTipY.getValuef();
       float x2 = model.cx;
-      float y2 = cy1.getValuef();
-      float x3 = cx2.getValuef();
-      float y3 = cy2.getValuef();
+      float y2 = wingCenterY.getValuef();
+      float x3 = rightWingX.getValuef();
+      float y3 = wingTipY.getValuef();
       
       line(x1, y1, x2, y2);
       line(x2, y2, x3, y3);
     }
+    
   }
 }
 
