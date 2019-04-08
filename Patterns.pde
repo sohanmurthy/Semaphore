@@ -304,7 +304,10 @@ class Wingbeats extends LXPattern {
     
   Wingbeats(LX lx) {
     super(lx);
-    addLayer(new Wing(lx));
+    
+    addLayer(new Wing(lx, model.xMax/3, 0));
+    addLayer(new Wing(lx, model.xMax*0.75, 0));
+
   }
   
   public void run(double deltaMs) {
@@ -314,45 +317,47 @@ class Wingbeats extends LXPattern {
   class Wing extends LXLayer {
     
     private final SinLFO interval = new SinLFO(10*SECONDS, 12*SECONDS, 5*MINUTES);
-    private final Click click = new Click(interval);
-    //private final SinLFO wingBeat = new SinLFO(1000, 4000, 2000);
+    private final Click switchBeat = new Click(interval);
     
-    private final SinLFO leftWingX = new SinLFO(model.xMin, model.cx-15,
-      startModulator(new SinLFO(9000, 19000, 23000).randomBasis())
-    );
+    private final float wingCenterX;
+    private final int hOffset;
+    //private final SinLFO leftWingX = new SinLFO(model.xMin, model.cx-15,
+    //  startModulator(new SinLFO(9000, 19000, 23000).randomBasis())
+    //);
     
-    private final SinLFO rightWingX = new SinLFO(model.cx+15, model.xMax,
-      startModulator(new SinLFO(9000, 19000, 23000).randomBasis())
-    );
+    //private final SinLFO rightWingX = new SinLFO(model.cx+15, model.xMax,
+    //  startModulator(new SinLFO(9000, 19000, 23000).randomBasis())
+    //);
     
-    private final SinLFO wingCenterX = new SinLFO(model.cx-20, model.cx+20,
-      startModulator(new SinLFO(20*SECONDS, 40*SECONDS, 2*MINUTES).randomBasis())
-     );
+    //private final SinLFO wingCenterX = new SinLFO(model.cx-20, model.cx+20,
+    //  startModulator(new SinLFO(20*SECONDS, 40*SECONDS, 2*MINUTES).randomBasis())
+    // );
+    
+    
      
-    private final SinLFO wingCenterY = new SinLFO(model.cy+10, model.cy-10, 1000);
+    private final SinLFO wingCenterY = new SinLFO(model.cy+5, model.cy-5, 1000);
     private final SinLFO wingTipY = new SinLFO(model.yMin, model.yMax, 1000);
     
 
     
-    Wing(LX lx) {
+    Wing(LX lx, float cx, int h) {
       super(lx);
+      wingCenterX = cx;
+      hOffset = h;
       addModulator(interval).start();
-      addModulator(click).start();
-      //startModulator(wingBeat);      
-      addModulator(wingCenterX).start();
+      addModulator(switchBeat).start();     
+      //addModulator(wingCenterX).start();
       startModulator(wingCenterY);
       addModulator(wingTipY).start();
-      startModulator(leftWingX.randomBasis());
-      startModulator(rightWingX.randomBasis());
+      //startModulator(leftWingX.randomBasis());
+      //startModulator(rightWingX.randomBasis());
       init();
     }
 
     private void init() {
-    final float ds = random(1600,3200);
+      final float ds = random(1600,3200);
       wingCenterY.setPeriod(ds);
-      wingTipY.setPeriod(ds);
-      println(ds, interval.getValue());
- 
+      wingTipY.setPeriod(ds); 
     }
     
     private void line(float x1, float y1, float x2, float y2) {
@@ -373,7 +378,7 @@ class Wingbeats extends LXPattern {
           float s = b/3 - FADE*abs(p.y - yv);
           if (b > 0) {
             blendColor(p.index, LXColor.hsb(
-            lx.getBaseHuef(),
+            lx.getBaseHuef() + hOffset,
             min(100, abs(s)), 
             b), LXColor.Blend.LIGHTEST);
           }
@@ -391,7 +396,7 @@ class Wingbeats extends LXPattern {
           float s = b/3 - FADE*abs(p.x - xv);
           if (b > 0) {
             blendColor(p.index, LXColor.hsb(
-            lx.getBaseHuef(),
+            lx.getBaseHuef() + hOffset,
             min(100, abs(s)), 
             b), LXColor.Blend.LIGHTEST);
           }
@@ -401,15 +406,17 @@ class Wingbeats extends LXPattern {
     
     public void run(double deltaMs) {
       
-      if (click.click()) {
+      if (switchBeat.click()) {
         init();
       } 
+           
+
  
-      float x1 = leftWingX.getValuef();
+      float x1 = wingCenterX-40;
       float y1 = wingTipY.getValuef();
-      float x2 = wingCenterX.getValuef();
+      float x2 = wingCenterX;
       float y2 = wingCenterY.getValuef();
-      float x3 = rightWingX.getValuef();
+      float x3 = wingCenterX+20;
       float y3 = wingTipY.getValuef();
       
       line(x1, y1, x2, y2);
