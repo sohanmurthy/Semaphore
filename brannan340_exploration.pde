@@ -24,11 +24,13 @@ void setup() {
 
   lx.setPatterns(new LXPattern[] {
 
-    new BlobStats(lx), 
+    new Wingbeats(lx),
+    new Blobs(lx), 
     new Aurora(lx), 
     new Spirals(lx), 
     new ColorSwatches(lx, 32), 
-    new ColorSwatches(lx, 16), 
+    new ColorSwatches(lx, 16),
+    
 
     new IteratorTestPattern(lx), 
     //new BaseHuePattern(lx),
@@ -56,8 +58,6 @@ void setup() {
     .setCenter(model.cx, model.cy, model.cz)
     .setRadius(10*FEET)
     .setRadiusBounds(2*FEET, 20*FEET)
-    //.setTheta(PI/6)
-    //.setPhi(PI/64)
     .addComponent(pointCloud = new UIPointCloud(lx, model).setPointSize(4))
     );
 
