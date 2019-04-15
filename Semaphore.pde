@@ -1,11 +1,9 @@
 /********************************************************
  
- Exploration of model construction and effects triggers
- for a potential installation at Coda's 340 Branna office
+SEMAPHORE is an LED art installation located in Coda's
+San Francisco Office.
  
  *********************************************************/
-
-//import ddf.minim.*;
 
 final static int INCHES = 1;
 final static int FEET = 12*INCHES;
