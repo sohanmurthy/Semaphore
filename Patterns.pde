@@ -304,7 +304,7 @@ class Wingbeats extends LXPattern {
     super(lx);
     
     for (int i = 0; i < 3; ++i) {
-      addLayer(new Wing(lx, i*80));
+      addLayer(new Wing(lx, i*40));
     }
   }
   
@@ -319,23 +319,22 @@ class Wingbeats extends LXPattern {
 
     private final int hOffset;
     
-    private final SinLFO wingCenterX = new SinLFO(model.xMin+10, model.xMax-10,
-      startModulator(new SinLFO(40*SECONDS, 80*SECONDS, 6*MINUTES).randomBasis())
-     );
+    private final SinLFO xPeriod  = new SinLFO (random(30*SECONDS, 40*SECONDS), random(50*SECONDS, 60*SECONDS), random(40*SECONDS, 80*SECONDS));
+    
+    private final SinLFO wingCenterX = new SinLFO(model.xMin+10, model.xMax-10, xPeriod);
 
     private final SinLFO wingCenterY = new SinLFO(model.cy+5, model.cy-5, 1000);
      
     private final SinLFO wingTipY = new SinLFO(model.yMin, model.yMax, 1000);
     
-    private final SinLFO wingLength = new SinLFO(20, 40,
-      5000
-      );
+    private final SinLFO wingLength = new SinLFO(20, 40, 5000);
     
     Wing(LX lx, int h) {
       super(lx);
       hOffset = h;
       addModulator(interval).start();
       addModulator(switchBeat).start();     
+      addModulator(xPeriod.randomBasis()).start();
       addModulator(wingCenterX.randomBasis()).start();
       startModulator(wingCenterY);
       addModulator(wingLength.randomBasis()).start();
