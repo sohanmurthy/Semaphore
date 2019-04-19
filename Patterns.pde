@@ -224,7 +224,7 @@ class Blobs extends LXPattern {
   
   final int MAX_BLOBS = 30;
   final int bright = 80;
-  final DiscreteParameter docs = new DiscreteParameter("Num", 7, 3, MAX_BLOBS);
+  final DiscreteParameter docs = new DiscreteParameter("Num", 10, 3, MAX_BLOBS);
   
   Blobs(LX lx) {
     super(lx);
@@ -303,7 +303,7 @@ class Wingbeats extends LXPattern {
   Wingbeats(LX lx) {
     super(lx);
     
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 6; ++i) {
       addLayer(new Wing(lx, i*40));
     }
   }
@@ -320,13 +320,9 @@ class Wingbeats extends LXPattern {
     private final int hOffset;
     
     private final SinLFO xPeriod  = new SinLFO (random(30*SECONDS, 40*SECONDS), random(50*SECONDS, 60*SECONDS), random(40*SECONDS, 80*SECONDS));
-    
-    private final SinLFO wingCenterX = new SinLFO(model.xMin+10, model.xMax-10, xPeriod);
-
+    private final SinLFO wingCenterX = new SinLFO(model.xMin-40, model.xMax+40, xPeriod.getValuef()*2);
     private final SinLFO wingCenterY = new SinLFO(model.cy+5, model.cy-5, 1000);
-     
     private final SinLFO wingTipY = new SinLFO(model.yMin, model.yMax, 1000);
-    
     private final SinLFO wingLength = new SinLFO(20, 40, 5000);
     
     Wing(LX lx, int h) {
@@ -343,7 +339,7 @@ class Wingbeats extends LXPattern {
     }
 
     private void init() {
-      final float ds = random(5000,9000);
+      final float ds = random(4000,5000);
       wingCenterY.setPeriod(ds);
       wingTipY.setPeriod(ds);
       wingLength.setPeriod(ds/2);
