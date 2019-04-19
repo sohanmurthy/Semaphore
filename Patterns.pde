@@ -333,7 +333,7 @@ class Wingbeats extends LXPattern {
       addModulator(xPeriod.randomBasis()).start();
       addModulator(wingCenterX.randomBasis()).start();
       startModulator(wingCenterY);
-      addModulator(wingLength.randomBasis()).start();
+      addModulator(wingLength).start();
       addModulator(wingTipY).start();
       init();
     }
