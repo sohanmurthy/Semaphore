@@ -5,7 +5,7 @@
 public static final int TUBE_PIXELS = 64;
 public static final float PIXEL_SPACING = 0.65625;
 public static final int TUBE_YPOS = 6;
-public static final int TUBE_XPOS = 18;
+public static final int TUBE_XPOS = 15;
 public static final int TUBE_OFFSET = 18;
 
 
@@ -19,7 +19,7 @@ static class Model extends LXModel {
 
     Fixture() {
       //angled tubes with an offset
-      for (int i = 0; i < 8; i++) {
+      for (int i = 0; i < 7; i++) {
         addPoints(new TubeAngle((TUBE_XPOS*i)+TUBE_YPOS, TUBE_YPOS));
         addPoints(new TubeAngle((TUBE_XPOS*i)+(TUBE_XPOS/2), 0));
       }
