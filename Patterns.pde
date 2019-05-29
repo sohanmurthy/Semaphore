@@ -303,7 +303,7 @@ class Wingbeats extends LXPattern {
   Wingbeats(LX lx) {
     super(lx);
     
-    for (int i = 0; i < 6; ++i) {
+    for (int i = 0; i < 4; ++i) {
       addLayer(new Wing(lx, i*40));
     }
   }
