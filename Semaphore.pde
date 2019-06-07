@@ -27,8 +27,8 @@ void setup() {
     new Wingbeats(lx),
     new Aurora(lx),
     new ColorSwatches(lx, 16),
-    
-    //new ColorSwatches(lx, 32), 
+    new Blobs(lx),
+    new ColorSwatches(lx, 32), 
     
     
 
@@ -47,7 +47,7 @@ void setup() {
     p.setTransition(multiply);
   }
 
-  lx.enableAutoTransition(10*SECONDS);
+  //lx.enableAutoTransition(10*SECONDS);
 
   //output = buildOutput();
 

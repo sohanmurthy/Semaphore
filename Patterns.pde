@@ -126,7 +126,7 @@ class Spirals extends LXPattern {
         float vy2 = model.yRange/4 * sin(off2.getValuef() + (p.x - model.cx) / wth2.getValuef());
         float vy = model.ay + vy1 + vy2;
         
-        float thickness = 4 + 2 * sin(off3.getValuef() + (p.x - model.cx) / wth3.getValuef());
+        float thickness = 7 + 3 * sin(off3.getValuef() + (p.x - model.cx) / wth3.getValuef());
         float ts = thickness/1.2;
 
         blendColor(p.index, LXColor.hsb(
