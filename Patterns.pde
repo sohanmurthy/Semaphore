@@ -303,7 +303,7 @@ class Wingbeats extends LXPattern {
   Wingbeats(LX lx) {
     super(lx);
     
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 5; ++i) {
       addLayer(new Wing(lx, i*40));
     }
   }
@@ -348,9 +348,9 @@ class Wingbeats extends LXPattern {
     }
     
     private void init_touch() {
-      wingCenterX.setValue(model.xMin+5);
-      wingCenterX.setVelocity(random(5, 9));
-      wingCenterX.setAcceleration(random(1.1, 1.8));
+      wingCenterX.setValue(random(model.xMin-120, model.xMin-45));
+      wingCenterX.setVelocity(random(8, 20));
+      //wingCenterX.setAcceleration(random(1.1, 1.8));
     }
     
     private void line(float x1, float y1, float x2, float y2) {
@@ -363,7 +363,6 @@ class Wingbeats extends LXPattern {
       float LIP = 20;
       float FADE = 10;
       
-      boolean touched = false;
       
       for (LXPoint p : model.points) {
         if (p.x >= (x1-EDGE) && p.x <= (x2+EDGE)) {
@@ -372,7 +371,6 @@ class Wingbeats extends LXPattern {
           b = b - FADE*abs(p.y - yv);
           float s = b/3 - FADE*abs(p.y - yv);
           if (b > 0) {
-            touched = true;
             blendColor(p.index, LXColor.hsb(
             lx.getBaseHuef() + hOffset,
             min(100, abs(s)), 
@@ -391,17 +389,12 @@ class Wingbeats extends LXPattern {
           b = b - FADE*abs(p.x - xv);
           float s = b/3 - FADE*abs(p.x - xv);
           if (b > 0) {
-            touched = true;
             blendColor(p.index, LXColor.hsb(
             lx.getBaseHuef() + hOffset,
             min(100, abs(s)), 
             b), LXColor.Blend.LIGHTEST);
           }
         }
-      }
-      
-      if (!touched) {
-        init_touch();
       }
       
     }
@@ -424,6 +417,11 @@ class Wingbeats extends LXPattern {
       
       line(x1, y1, x2, y2);
       line(x2, y2, x3, y3);
+      
+      
+      if (wingCenterX.getValue() > model.xMax+20) {
+        init_touch();
+      }
       
 
      
