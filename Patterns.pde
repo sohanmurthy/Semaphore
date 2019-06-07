@@ -303,8 +303,8 @@ class Wingbeats extends LXPattern {
   Wingbeats(LX lx) {
     super(lx);
     
-    for (int i = 0; i < 5; ++i) {
-      addLayer(new Wing(lx, i*40));
+    for (int i = 0; i < 4; ++i) {
+      addLayer(new Wing(lx, i*20));
     }
   }
   
@@ -319,11 +319,14 @@ class Wingbeats extends LXPattern {
 
     private final int hOffset;
     
-    private final SinLFO xPeriod  = new SinLFO (random(30*SECONDS, 40*SECONDS), random(50*SECONDS, 60*SECONDS), random(40*SECONDS, 80*SECONDS));
-    //private final SinLFO wingCenterX = new SinLFO(model.xMin-40, model.xMax+40, xPeriod.getValuef()*2);
     private final Accelerator wingCenterX = new Accelerator(0, 0, 0);
-    private final SinLFO wingCenterY = new SinLFO(model.cy+5, model.cy-5, 1000);
-    private final SinLFO wingTipY = new SinLFO(model.yMin, model.yMax, 1000);
+    
+    private final Accelerator yPos = new Accelerator(random(model.yMin+5, model.yMax-5), 0, 0);
+    
+    private final SinLFO wingCenterY = new SinLFO(yPos.getValue()-5, yPos.getValue()+5, 1000);
+    private final SinLFO wingTipY = new SinLFO(yPos.getValue()+17, yPos.getValue()-17, 1000);
+    
+    
     private final SinLFO wingLength = new SinLFO(20, 40, 5000);
     
     Wing(LX lx, int h) {
@@ -331,26 +334,29 @@ class Wingbeats extends LXPattern {
       hOffset = h;
       addModulator(interval).start();
       addModulator(switchBeat).start();     
-      addModulator(xPeriod.randomBasis()).start();
       addModulator(wingCenterX).start();
+      addModulator(yPos).start();
       startModulator(wingCenterY);
-      addModulator(wingLength).start();
       addModulator(wingTipY).start();
+      addModulator(wingLength).start();
+      
       init_beat();
       init_touch();
+      
+      
     }
 
     private void init_beat() {
-      final float ds = random(3000,4000);
+      final float ds = random(3000,4500);
       wingCenterY.setPeriod(ds);
       wingTipY.setPeriod(ds);
       wingLength.setPeriod(ds/2);
     }
     
     private void init_touch() {
-      wingCenterX.setValue(random(model.xMin-120, model.xMin-45));
-      wingCenterX.setVelocity(random(8, 20));
-      //wingCenterX.setAcceleration(random(1.1, 1.8));
+      wingCenterX.setValue(random(-(model.xMax)-20, model.xMin-20));
+      wingCenterX.setVelocity(random(8, 15));
+
     }
     
     private void line(float x1, float y1, float x2, float y2) {
@@ -412,7 +418,7 @@ class Wingbeats extends LXPattern {
       float y1 = wingTipY.getValuef();
       float x2 = wingCenterX.getValuef();
       float y2 = wingCenterY.getValuef();
-      float x3 = wingCenterX.getValuef()+wingLength.getValuef();
+      float x3 = wingCenterX.getValuef()+(wingLength.getValuef()-15);
       float y3 = wingTipY.getValuef();
       
       line(x1, y1, x2, y2);
@@ -422,8 +428,7 @@ class Wingbeats extends LXPattern {
       if (wingCenterX.getValue() > model.xMax+20) {
         init_touch();
       }
-      
-
+     
      
     }
     

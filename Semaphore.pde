@@ -22,15 +22,17 @@ void setup() {
 
   lx.setPatterns(new LXPattern[] {
 
+    
+    new Spirals(lx),
     new Wingbeats(lx),
-    new Blobs(lx), 
-    new Aurora(lx), 
-    new Spirals(lx), 
-    new ColorSwatches(lx, 32), 
+    new Aurora(lx),
     new ColorSwatches(lx, 16),
     
+    //new ColorSwatches(lx, 32), 
+    
+    
 
-    new IteratorTestPattern(lx), 
+    //new IteratorTestPattern(lx), 
     //new BaseHuePattern(lx),
 
     });
@@ -39,13 +41,13 @@ void setup() {
 
   setupPubNubHandlers();
   
-  final LXTransition multiply = new MultiplyTransition(lx).setDuration(5*SECONDS);
+  final LXTransition multiply = new MultiplyTransition(lx).setDuration(3*MINUTES);
 
   for (LXPattern p : lx.getPatterns()) {
     p.setTransition(multiply);
   }
 
-  //lx.enableAutoTransition(3*MINUTES);
+  lx.enableAutoTransition(10*SECONDS);
 
   //output = buildOutput();
 
