@@ -23,7 +23,7 @@ void setup() {
   lx.setPatterns(new LXPattern[] {
 
     
-    new Spirals(lx),
+    //new Spirals(lx),
     new Wingbeats(lx),
     new Aurora(lx),
     new ColorSwatches(lx, 16),

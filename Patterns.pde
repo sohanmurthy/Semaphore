@@ -303,7 +303,7 @@ class Wingbeats extends LXPattern {
   Wingbeats(LX lx) {
     super(lx);
     
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 8; ++i) {
       addLayer(new Wing(lx, i*20));
     }
   }
@@ -319,8 +319,7 @@ class Wingbeats extends LXPattern {
 
     private final int hOffset;
     
-    private final Accelerator wingCenterX = new Accelerator(0, 0, 0);
-    
+    private final Accelerator wingCenterX = new Accelerator(random(model.xMin, model.xMax), 0, 0);
     private final Accelerator yPos = new Accelerator(random(model.yMin+5, model.yMax-5), 0, 0);
     
     private final SinLFO wingCenterY = new SinLFO(yPos.getValue()-5, yPos.getValue()+5, 1000);
@@ -343,7 +342,7 @@ class Wingbeats extends LXPattern {
       init_beat();
       init_touch();
       
-      
+      wingCenterX.setValue(random(model.xMin-40, model.xMax+40));
     }
 
     private void init_beat() {
@@ -354,8 +353,9 @@ class Wingbeats extends LXPattern {
     }
     
     private void init_touch() {
-      wingCenterX.setValue(random(-(model.xMax)-20, model.xMin-20));
-      wingCenterX.setVelocity(random(8, 15));
+      wingCenterX.setValue(random(-(model.xMax)-40, model.xMin-40));
+      wingCenterX.setVelocity(random(3, 12));
+      wingCenterX.setAcceleration(random(0.1, 0.2));
 
     }
     
@@ -425,9 +425,10 @@ class Wingbeats extends LXPattern {
       line(x2, y2, x3, y3);
       
       
-      if (wingCenterX.getValue() > model.xMax+20) {
+      if (wingCenterX.getValue() > (model.xMax*2)-40) {
         init_touch();
       }
+      
      
      
     }
