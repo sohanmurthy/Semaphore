@@ -72,14 +72,14 @@ Spirals
 class Spirals extends LXPattern {
   
   final int MAX_SPIRALS = 12;
-  final DiscreteParameter docs = new DiscreteParameter("Num", 6, 1, MAX_SPIRALS);
+  final DiscreteParameter docs = new DiscreteParameter("Num", 4, 1, MAX_SPIRALS);
   
   
   Spirals(LX lx) {
     super(lx);
     addParameter(docs);
     for (int i = 0; i <= MAX_SPIRALS; ++i) {
-      addLayer(new Wave(lx, i*6, i));
+      addLayer(new Wave(lx, i*0, i));
     }
   }
   
@@ -130,7 +130,7 @@ class Spirals extends LXPattern {
         float ts = thickness/1.2;
 
         blendColor(p.index, LXColor.hsb(
-        ((lx.getBaseHuef()+190) + hOffset + (p.x / model.xRange) * 90) % 360,
+        ((lx.getBaseHuef()+190) + hOffset + (p.x / model.xRange) * 120) % 360,
         min(65, (100/ts)*abs(p.y - vy)), 
         max(0, 40 - (40/thickness)*abs(p.y - vy))
         ), LXColor.Blend.ADD);
@@ -303,13 +303,14 @@ class Wingbeats extends LXPattern {
   Wingbeats(LX lx) {
     super(lx);
     
-    for (int i = 0; i < 8; ++i) {
-      addLayer(new Wing(lx, i*20));
+    for (int i = 0; i < 7; ++i) {
+      addLayer(new Wing(lx, i*15));
     }
   }
   
   public void run(double deltaMs) {
     LXColor.scaleBrightness(colors, max(0, (float) (1 - deltaMs / 600.f)), null);
+    lx.cycleBaseHue(3.2*MINUTES);
   }
   
   class Wing extends LXLayer {
@@ -328,6 +329,7 @@ class Wingbeats extends LXPattern {
     
     private final SinLFO wingLength = new SinLFO(20, 40, 5000);
     
+    
     Wing(LX lx, int h) {
       super(lx);
       hOffset = h;
@@ -342,20 +344,23 @@ class Wingbeats extends LXPattern {
       init_beat();
       init_touch();
       
-      wingCenterX.setValue(random(model.xMin-40, model.xMax+40));
+      wingCenterX.setValue(random(-(model.xMax)-40, model.xMax));
     }
 
     private void init_beat() {
-      final float ds = random(3000,4500);
+      final float ds = random(2500,3500);
       wingCenterY.setPeriod(ds);
       wingTipY.setPeriod(ds);
       wingLength.setPeriod(ds/2);
+      
     }
     
     private void init_touch() {
+      
+      
       wingCenterX.setValue(random(-(model.xMax)-40, model.xMin-40));
-      wingCenterX.setVelocity(random(3, 12));
-      wingCenterX.setAcceleration(random(0.1, 0.2));
+      wingCenterX.setVelocity(random(6, 10));
+      wingCenterX.setAcceleration(random(0.18, 0.35));
 
     }
     
@@ -425,11 +430,9 @@ class Wingbeats extends LXPattern {
       line(x2, y2, x3, y3);
       
       
-      if (wingCenterX.getValue() > (model.xMax*2)-40) {
+      if (wingCenterX.getValue() > model.xMax+40) {
         init_touch();
       }
-      
-     
      
     }
     

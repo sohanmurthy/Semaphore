@@ -23,13 +23,10 @@ void setup() {
   lx.setPatterns(new LXPattern[] {
 
     
-    //new Spirals(lx),
+    new Spirals(lx),
     new Wingbeats(lx),
-    new Aurora(lx),
     new ColorSwatches(lx, 16),
     new Blobs(lx),
-    new ColorSwatches(lx, 32), 
-    
     
 
     //new IteratorTestPattern(lx), 
@@ -47,7 +44,7 @@ void setup() {
     p.setTransition(multiply);
   }
 
-  //lx.enableAutoTransition(10*SECONDS);
+  lx.enableAutoTransition(17*MINUTES);
 
   //output = buildOutput();
 
