@@ -72,14 +72,14 @@ Spirals
 class Spirals extends LXPattern {
   
   final int MAX_SPIRALS = 12;
-  final DiscreteParameter docs = new DiscreteParameter("Num", 6, 1, MAX_SPIRALS);
+  final DiscreteParameter docs = new DiscreteParameter("Num", 4, 1, MAX_SPIRALS);
   
   
   Spirals(LX lx) {
     super(lx);
     addParameter(docs);
     for (int i = 0; i <= MAX_SPIRALS; ++i) {
-      addLayer(new Wave(lx, i*6, i));
+      addLayer(new Wave(lx, i*0, i));
     }
   }
   
@@ -126,11 +126,11 @@ class Spirals extends LXPattern {
         float vy2 = model.yRange/4 * sin(off2.getValuef() + (p.x - model.cx) / wth2.getValuef());
         float vy = model.ay + vy1 + vy2;
         
-        float thickness = 4 + 2 * sin(off3.getValuef() + (p.x - model.cx) / wth3.getValuef());
+        float thickness = 7 + 3 * sin(off3.getValuef() + (p.x - model.cx) / wth3.getValuef());
         float ts = thickness/1.2;
 
         blendColor(p.index, LXColor.hsb(
-        ((lx.getBaseHuef()+190) + hOffset + (p.x / model.xRange) * 90) % 360,
+        ((lx.getBaseHuef()+190) + hOffset + (p.x / model.xRange) * 120) % 360,
         min(65, (100/ts)*abs(p.y - vy)), 
         max(0, 40 - (40/thickness)*abs(p.y - vy))
         ), LXColor.Blend.ADD);
@@ -303,13 +303,14 @@ class Wingbeats extends LXPattern {
   Wingbeats(LX lx) {
     super(lx);
     
-    for (int i = 0; i < 4; ++i) {
-      addLayer(new Wing(lx, i*40));
+    for (int i = 0; i < 7; ++i) {
+      addLayer(new Wing(lx, i*15));
     }
   }
   
   public void run(double deltaMs) {
     LXColor.scaleBrightness(colors, max(0, (float) (1 - deltaMs / 600.f)), null);
+    lx.cycleBaseHue(3.2*MINUTES);
   }
   
   class Wing extends LXLayer {
@@ -319,30 +320,48 @@ class Wingbeats extends LXPattern {
 
     private final int hOffset;
     
-    private final SinLFO xPeriod  = new SinLFO (random(30*SECONDS, 40*SECONDS), random(50*SECONDS, 60*SECONDS), random(40*SECONDS, 80*SECONDS));
-    private final SinLFO wingCenterX = new SinLFO(model.xMin-40, model.xMax+40, xPeriod.getValuef()*2);
-    private final SinLFO wingCenterY = new SinLFO(model.cy+5, model.cy-5, 1000);
-    private final SinLFO wingTipY = new SinLFO(model.yMin, model.yMax, 1000);
+    private final Accelerator wingCenterX = new Accelerator(random(model.xMin, model.xMax), 0, 0);
+    private final Accelerator yPos = new Accelerator(random(model.yMin+5, model.yMax-5), 0, 0);
+    
+    private final SinLFO wingCenterY = new SinLFO(yPos.getValue()-5, yPos.getValue()+5, 1000);
+    private final SinLFO wingTipY = new SinLFO(yPos.getValue()+17, yPos.getValue()-17, 1000);
+    
+    
     private final SinLFO wingLength = new SinLFO(20, 40, 5000);
+    
     
     Wing(LX lx, int h) {
       super(lx);
       hOffset = h;
       addModulator(interval).start();
       addModulator(switchBeat).start();     
-      addModulator(xPeriod.randomBasis()).start();
-      addModulator(wingCenterX.randomBasis()).start();
+      addModulator(wingCenterX).start();
+      addModulator(yPos).start();
       startModulator(wingCenterY);
-      addModulator(wingLength).start();
       addModulator(wingTipY).start();
-      init();
+      addModulator(wingLength).start();
+      
+      init_beat();
+      init_touch();
+      
+      wingCenterX.setValue(random(-(model.xMax)-40, model.xMax));
     }
 
-    private void init() {
-      final float ds = random(4000,5000);
+    private void init_beat() {
+      final float ds = random(2500,3500);
       wingCenterY.setPeriod(ds);
       wingTipY.setPeriod(ds);
       wingLength.setPeriod(ds/2);
+      
+    }
+    
+    private void init_touch() {
+      
+      
+      wingCenterX.setValue(random(-(model.xMax)-40, model.xMin-40));
+      wingCenterX.setVelocity(random(6, 10));
+      wingCenterX.setAcceleration(random(0.18, 0.35));
+
     }
     
     private void line(float x1, float y1, float x2, float y2) {
@@ -354,6 +373,7 @@ class Wingbeats extends LXPattern {
       float EDGE = 40;
       float LIP = 20;
       float FADE = 10;
+      
       
       for (LXPoint p : model.points) {
         if (p.x >= (x1-EDGE) && p.x <= (x2+EDGE)) {
@@ -387,24 +407,32 @@ class Wingbeats extends LXPattern {
           }
         }
       }
+      
     }
     
     public void run(double deltaMs) {
       
+      
+      
       if (switchBeat.click()) {
-        init();
+        init_beat();
       } 
-           
+     
 
       float x1 = wingCenterX.getValuef()-wingLength.getValuef();
       float y1 = wingTipY.getValuef();
       float x2 = wingCenterX.getValuef();
       float y2 = wingCenterY.getValuef();
-      float x3 = wingCenterX.getValuef()+wingLength.getValuef();
+      float x3 = wingCenterX.getValuef()+(wingLength.getValuef()-15);
       float y3 = wingTipY.getValuef();
       
       line(x1, y1, x2, y2);
       line(x2, y2, x3, y3);
+      
+      
+      if (wingCenterX.getValue() > model.xMax+40) {
+        init_touch();
+      }
      
     }
     
