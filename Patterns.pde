@@ -72,7 +72,7 @@ Spirals
 class Spirals extends LXPattern {
   
   final int MAX_SPIRALS = 12;
-  final DiscreteParameter docs = new DiscreteParameter("Num", 4, 1, MAX_SPIRALS);
+  final DiscreteParameter docs = new DiscreteParameter("Num", 3, 1, MAX_SPIRALS);
   
   
   Spirals(LX lx) {
@@ -348,7 +348,7 @@ class Wingbeats extends LXPattern {
     }
 
     private void init_beat() {
-      final float ds = random(2500,3500);
+      final float ds = random(3000,4000);
       wingCenterY.setPeriod(ds);
       wingTipY.setPeriod(ds);
       wingLength.setPeriod(ds/2);
@@ -359,7 +359,7 @@ class Wingbeats extends LXPattern {
       
       
       wingCenterX.setValue(random(-(model.xMax)-40, model.xMin-40));
-      wingCenterX.setVelocity(random(6, 10));
+      wingCenterX.setVelocity(random(4, 8));
       wingCenterX.setAcceleration(random(0.18, 0.35));
 
     }

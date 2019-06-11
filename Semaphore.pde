@@ -46,20 +46,20 @@ void setup() {
 
   lx.enableAutoTransition(17*MINUTES);
 
-  //output = buildOutput();
+  output = buildOutput();
 
   // Adds UI elements -- COMMENT all of this out if running on Linux in a headless environment
-  size(1280, 720, P3D);
-  lx.ui.addLayer(
-    new UI3dContext(lx.ui)
-    .setCenter(model.cx, model.cy, model.cz)
-    .setRadius(10*FEET)
-    .setRadiusBounds(2*FEET, 20*FEET)
-    .addComponent(pointCloud = new UIPointCloud(lx, model).setPointSize(4))
-    );
+  //size(1280, 720, P3D);
+  //lx.ui.addLayer(
+  //  new UI3dContext(lx.ui)
+  //  .setCenter(model.cx, model.cy, model.cz)
+  //  .setRadius(10*FEET)
+  //  .setRadiusBounds(2*FEET, 20*FEET)
+  //  .addComponent(pointCloud = new UIPointCloud(lx, model).setPointSize(4))
+  //  );
 
-  lx.ui.addLayer(new UIChannelControl(lx.ui, lx, 0, 0));
-  lx.ui.addLayer(new UIEffects(lx.ui, 0, 320));
+  //lx.ui.addLayer(new UIChannelControl(lx.ui, lx, 0, 0));
+  //lx.ui.addLayer(new UIEffects(lx.ui, 0, 320));
 }
 
 

@@ -1,6 +1,6 @@
 void setupPubNubHandlers() {
   PNConfiguration pnConfiguration = new PNConfiguration();
-  pnConfiguration.setSubscribeKey("INSERT-KEY-HERE");
+  pnConfiguration.setSubscribeKey("sub-c-1384ac22-55b8-11e9-bbf0-3acac64ba8c7");
 
   PubNub pubnub = new PubNub(pnConfiguration);
   pubnub.addListener(new SubscribeCallback() {
