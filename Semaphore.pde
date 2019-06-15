@@ -1,8 +1,11 @@
 /********************************************************
- 
+
 SEMAPHORE is an LED art installation located in Coda's
-San Francisco Office.
- 
+San Francisco Office. It consists of 14 repurposed LED
+tubs controlled via custom software that generates organic
+shapes and patterns. The installation can be interacted
+with remotely via PubNub and suitable endpoints.
+
  *********************************************************/
 
 final static int INCHES = 1;
@@ -22,23 +25,19 @@ void setup() {
 
   lx.setPatterns(new LXPattern[] {
 
-    
     new Spirals(lx),
     new Wingbeats(lx),
     new ColorSwatches(lx, 16),
     new Blobs(lx),
-    
-
-    //new IteratorTestPattern(lx), 
-    //new BaseHuePattern(lx),
 
     });
 
   lx.addEffect(effects = new Effects(lx));
 
+  //adds PubNub
   setupPubNubHandlers();
-  
-  final LXTransition multiply = new MultiplyTransition(lx).setDuration(3*MINUTES);
+
+  final LXTransition multiply = new MultiplyTransition(lx).setDuration(6*MINUTES);
 
   for (LXPattern p : lx.getPatterns()) {
     p.setTransition(multiply);

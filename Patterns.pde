@@ -3,7 +3,7 @@ Color Swatches
 *******************/
 
 class ColorSwatches extends LXPattern{
-  
+
 
   class Swatch extends LXLayer {
 
@@ -52,7 +52,7 @@ class ColorSwatches extends LXPattern{
      addLayer(new Swatch(lx, s, s+section, 28));
      }else{
        addLayer(new Swatch(lx, s, s+section, 0));
-     }  
+     }
    }
   }
 
@@ -70,11 +70,11 @@ Spirals
 *******************/
 
 class Spirals extends LXPattern {
-  
+
   final int MAX_SPIRALS = 12;
-  final DiscreteParameter docs = new DiscreteParameter("Num", 4, 1, MAX_SPIRALS);
-  
-  
+  final DiscreteParameter docs = new DiscreteParameter("Num", 3, 1, MAX_SPIRALS);
+
+
   Spirals(LX lx) {
     super(lx);
     addParameter(docs);
@@ -82,9 +82,9 @@ class Spirals extends LXPattern {
       addLayer(new Wave(lx, i*0, i));
     }
   }
-  
+
   class Wave extends LXLayer {
-    
+
     final private SinLFO rate1 = new SinLFO(200000*2, 290000*2, 17000);
     final private SinLFO off1 = new SinLFO(-4*TWO_PI, 4*TWO_PI, rate1);
     final private SinLFO wth1 = new SinLFO(7, 12, 30000);
@@ -98,9 +98,9 @@ class Spirals extends LXPattern {
     final private SinLFO wth3 = new SinLFO(12, 140, 40000);
 
     final private float hOffset;
-    
+
     final int num;
-    
+
     Wave(LX lx, float o, int num) {
       super(lx);
       hOffset = o;
@@ -121,22 +121,22 @@ class Spirals extends LXPattern {
         return;
       }
       for (LXPoint p : model.points) {
-        
+
         float vy1 = model.yRange/4 * sin(off1.getValuef() + (p.x - model.cx) / wth1.getValuef());
         float vy2 = model.yRange/4 * sin(off2.getValuef() + (p.x - model.cx) / wth2.getValuef());
         float vy = model.ay + vy1 + vy2;
-        
+
         float thickness = 7 + 3 * sin(off3.getValuef() + (p.x - model.cx) / wth3.getValuef());
         float ts = thickness/1.2;
 
         blendColor(p.index, LXColor.hsb(
         ((lx.getBaseHuef()+190) + hOffset + (p.x / model.xRange) * 120) % 360,
-        min(65, (100/ts)*abs(p.y - vy)), 
+        min(65, (100/ts)*abs(p.y - vy)),
         max(0, 40 - (40/thickness)*abs(p.y - vy))
         ), LXColor.Blend.ADD);
       }
     }
-   
+
   }
 
 
@@ -148,84 +148,16 @@ class Spirals extends LXPattern {
 
 
 /******************
-Aurora
-*******************/
-
-class Aurora extends LXPattern {
-  class Wave extends LXLayer {
-    
-    final private SinLFO rate1 = new SinLFO(200000, 290000, 17000);
-    final private SinLFO off1 = new SinLFO(-4*TWO_PI, 4*TWO_PI, rate1);
-    final private SinLFO wth1 = new SinLFO(7, 12, 30000);
-
-    final private SinLFO rate2 = new SinLFO(228000, 310000, 22000);
-    final private SinLFO off2 = new SinLFO(-4*TWO_PI, 4*TWO_PI, rate2);
-    final private SinLFO wth2 = new SinLFO(15, 20, 44000);
-
-    final private SinLFO rate3 = new SinLFO(160000, 289000, 14000);
-    final private SinLFO off3 = new SinLFO(-2*TWO_PI, 2*TWO_PI, rate3);
-    final private SinLFO wth3 = new SinLFO(12, 140, 40000);
-
-
-    Wave(LX lx) {
-      super(lx);      
-      addModulator(rate1.randomBasis()).start();
-      addModulator(rate2.randomBasis()).start();
-      addModulator(rate3.randomBasis()).start();
-      addModulator(off1.randomBasis()).start();
-      addModulator(off2.randomBasis()).start();
-      addModulator(off3.randomBasis()).start();
-      addModulator(wth1.randomBasis()).start();
-      addModulator(wth2.randomBasis()).start();
-      addModulator(wth3.randomBasis()).start();
-    }
-
-    public void run(double deltaMs) {
-      for (LXPoint p : model.points) {
-        
-        float vy1 = model.yRange/5 * sin(off1.getValuef() + (p.x - model.cx) / wth1.getValuef());
-        float vy2 = model.yRange/5 * sin(off2.getValuef() + (p.x - model.cx) / wth2.getValuef());
-        float vy = model.ay + vy1 + vy2;
-        
-        float thickness = 16 + 7 * sin(off3.getValuef() + (p.x - model.cx) / wth3.getValuef());
-        float ts = thickness/1.2;
-
-        addColor(p.index, LXColor.hsb(
-        (lx.getBaseHuef() + (p.x / model.xRange) * 66) % 360,
-        min(65, (100/ts)*abs(p.y - vy)), 
-        max(0, 100 - (100/thickness)*abs(p.y - vy))
-        ));
-      }
-    }
-   
-  }
-
-  Aurora(LX lx) {
-    super(lx);
-    for (int i = 0; i < 1; ++i) {
-      addLayer(new Wave(lx));
-    }
-  }
-
-  public void run(double deltaMs) {
-    setColors(#000000);
-    lx.cycleBaseHue(6.34*MINUTES);
-  }
-}
-
-
-
-/******************
 Blobs
 *******************/
 
 class Blobs extends LXPattern {
-  
-  
+
+
   final int MAX_BLOBS = 30;
   final int bright = 80;
   final DiscreteParameter docs = new DiscreteParameter("Num", 10, 3, MAX_BLOBS);
-  
+
   Blobs(LX lx) {
     super(lx);
     addParameter(docs);
@@ -235,16 +167,16 @@ class Blobs extends LXPattern {
   }
 
   class Blob extends LXLayer {
-    
+
     private final SinLFO interval = new SinLFO(7000, 13000, 28000);
 
     //private final Click click = new Click(random(6000, 13000));
     private final Click click = new Click(interval);
     private final QuadraticEnvelope px = new QuadraticEnvelope(0, 0, 0).setEase(QuadraticEnvelope.Ease.BOTH);
     private final QuadraticEnvelope py = new QuadraticEnvelope(0, 0, 0).setEase(QuadraticEnvelope.Ease.BOTH);
-      
+
     private final SinLFO size = new SinLFO(4*INCHES, 10*INCHES, random(6000, 9600));
-    
+
     final int num;
 
     Blob(LX lx, int num) {
@@ -261,19 +193,19 @@ class Blobs extends LXPattern {
     public void run(double deltaMs) {
       if (click.click()) {
         init();
-      }   
+      }
       if (this.num > docs.getValuei()) {
         return;
-      }    
+      }
       for (LXPoint p : model.points) {
-        
+
         float b = bright - (bright / size.getValuef())*dist(p.x/2.2, p.y, px.getValuef(), py.getValuef());
         float s = b/3;
 
         if (b > 0) {
           blendColor(p.index, LXColor.hsb(
             (lx.getBaseHuef() + (p.y / model.yRange) * 90) % 360,
-            min(65, (100/s)*abs(p.y - py.getValuef())), 
+            min(65, (100/s)*abs(p.y - py.getValuef())),
             b), LXColor.Blend.ADD);
         }
       }
@@ -284,7 +216,7 @@ class Blobs extends LXPattern {
       px.setRangeFromHereTo(random(model.xMin, model.cx)).setPeriod(random(3800, 6000)).start();
       py.setRangeFromHereTo(random(model.yMin, model.yMax)).setPeriod(random(3800, 6000)).start();
     }
-    
+
   }
 
   public void run(double deltaMs) {
@@ -299,71 +231,71 @@ Wingbeats
 *******************/
 
 class Wingbeats extends LXPattern {
-      
+
   Wingbeats(LX lx) {
     super(lx);
-    
+
     for (int i = 0; i < 7; ++i) {
       addLayer(new Wing(lx, i*15));
     }
   }
-  
+
   public void run(double deltaMs) {
     LXColor.scaleBrightness(colors, max(0, (float) (1 - deltaMs / 600.f)), null);
     lx.cycleBaseHue(3.2*MINUTES);
   }
-  
+
   class Wing extends LXLayer {
-    
+
     private final SinLFO interval = new SinLFO(10*SECONDS, 12*SECONDS, 5*MINUTES);
     private final Click switchBeat = new Click(interval);
 
     private final int hOffset;
-    
+
     private final Accelerator wingCenterX = new Accelerator(random(model.xMin, model.xMax), 0, 0);
     private final Accelerator yPos = new Accelerator(random(model.yMin+5, model.yMax-5), 0, 0);
-    
+
     private final SinLFO wingCenterY = new SinLFO(yPos.getValue()-5, yPos.getValue()+5, 1000);
     private final SinLFO wingTipY = new SinLFO(yPos.getValue()+17, yPos.getValue()-17, 1000);
-    
-    
+
+
     private final SinLFO wingLength = new SinLFO(20, 40, 5000);
-    
-    
+
+
     Wing(LX lx, int h) {
       super(lx);
       hOffset = h;
       addModulator(interval).start();
-      addModulator(switchBeat).start();     
+      addModulator(switchBeat).start();
       addModulator(wingCenterX).start();
       addModulator(yPos).start();
       startModulator(wingCenterY);
       addModulator(wingTipY).start();
       addModulator(wingLength).start();
-      
+
       init_beat();
       init_touch();
-      
+
       wingCenterX.setValue(random(-(model.xMax)-40, model.xMax));
     }
 
     private void init_beat() {
-      final float ds = random(2500,3500);
+      final float ds = random(3000,4000);
       wingCenterY.setPeriod(ds);
       wingTipY.setPeriod(ds);
       wingLength.setPeriod(ds/2);
-      
+
     }
-    
+
     private void init_touch() {
-      
-      
+
+
       wingCenterX.setValue(random(-(model.xMax)-40, model.xMin-40));
-      wingCenterX.setVelocity(random(6, 10));
+      wingCenterX.setVelocity(random(4, 8));
       wingCenterX.setAcceleration(random(0.18, 0.35));
 
     }
-    
+
     private void line(float x1, float y1, float x2, float y2) {
       float xt, yt;
       if (x1 > x2) {
@@ -373,18 +305,18 @@ class Wingbeats extends LXPattern {
       float EDGE = 40;
       float LIP = 20;
       float FADE = 10;
-      
-      
+
+
       for (LXPoint p : model.points) {
         if (p.x >= (x1-EDGE) && p.x <= (x2+EDGE)) {
           float yv = lerp(y1, y2, (p.x-x1) / (x2-x1));
-          float b = min(100, min(LIP*(p.x-x1), LIP*(x2-p.x)));          
+          float b = min(100, min(LIP*(p.x-x1), LIP*(x2-p.x)));
           b = b - FADE*abs(p.y - yv);
           float s = b/3 - FADE*abs(p.y - yv);
           if (b > 0) {
             blendColor(p.index, LXColor.hsb(
             lx.getBaseHuef() + hOffset,
-            min(100, abs(s)), 
+            min(100, abs(s)),
             b), LXColor.Blend.LIGHTEST);
           }
         }
@@ -402,22 +334,22 @@ class Wingbeats extends LXPattern {
           if (b > 0) {
             blendColor(p.index, LXColor.hsb(
             lx.getBaseHuef() + hOffset,
-            min(100, abs(s)), 
+            min(100, abs(s)),
             b), LXColor.Blend.LIGHTEST);
           }
         }
       }
-      
+
     }
-    
+
     public void run(double deltaMs) {
-      
-      
-      
+
+
+
       if (switchBeat.click()) {
         init_beat();
-      } 
-     
+      }
+
 
       float x1 = wingCenterX.getValuef()-wingLength.getValuef();
       float y1 = wingTipY.getValuef();
@@ -425,16 +357,16 @@ class Wingbeats extends LXPattern {
       float y2 = wingCenterY.getValuef();
       float x3 = wingCenterX.getValuef()+(wingLength.getValuef()-15);
       float y3 = wingTipY.getValuef();
-      
+
       line(x1, y1, x2, y2);
       line(x2, y2, x3, y3);
-      
-      
+
+
       if (wingCenterX.getValue() > model.xMax+40) {
         init_touch();
       }
-     
+
     }
-    
+
   }
 }
