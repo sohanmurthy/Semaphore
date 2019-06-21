@@ -20,8 +20,8 @@ static class Model extends LXModel {
     Fixture() {
       //angled tubes with an offset
       for (int i = 0; i < 7; i++) {
-        addPoints(new TubeAngle((TUBE_XPOS*i)+TUBE_YPOS, TUBE_YPOS));
-        addPoints(new TubeAngle((TUBE_XPOS*i)+(TUBE_XPOS/2), 0));
+        addPoints(new TubeAngle((TUBE_XPOS*i)+TUBE_YPOS, TUBE_YPOS, 50));
+        addPoints(new TubeAngle((TUBE_XPOS*i)+(8), 0, 50));
       }
       
     }
@@ -29,33 +29,15 @@ static class Model extends LXModel {
 }
 
 
-//Tubes that are oriented left-to-right in a 45 degree angle
+//Tubes that are oriented left-to-right at a specified angle (theta)
 static class TubeAngle extends LXAbstractFixture {
 
-  private TubeAngle(int xP, int yP) {
+  private TubeAngle(int xP, int yP, int theta) {
     for (int i = 0; i < TUBE_PIXELS; ++i) {
-      addPoint(new LXPoint(xP+i*(sqrt(pow(PIXEL_SPACING, 2)/2)), yP+i*(sqrt(pow(PIXEL_SPACING, 2)/2))));
-    }
-  }
-}
-
-
-static class TubeRight extends LXAbstractFixture {
-
-  private TubeRight(int xP, int yP) {
-    for (int x = 0; x < TUBE_PIXELS; ++x) {
-      addPoint(new LXPoint(xP+x*PIXEL_SPACING, yP));
-    }
-  }
-}
-
-
-
-static class TubeLeft extends LXAbstractFixture {
-
-  private TubeLeft(int xP, int yP) {
-    for (int x = TUBE_PIXELS; x > 0; --x) {
-      addPoint(new LXPoint(xP+x*PIXEL_SPACING, yP));
+      addPoint(
+        new LXPoint(xP+i*(PIXEL_SPACING*cos(radians(theta))), yP+i*(PIXEL_SPACING*sin(radians(theta)))
+        )
+      );
     }
   }
 }

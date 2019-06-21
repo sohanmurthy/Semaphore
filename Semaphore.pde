@@ -37,7 +37,7 @@ void setup() {
   //adds PubNub
   setupPubNubHandlers();
 
-  final LXTransition multiply = new MultiplyTransition(lx).setDuration(6*MINUTES);
+  final LXTransition multiply = new MultiplyTransition(lx).setDuration(4*MINUTES);
 
   for (LXPattern p : lx.getPatterns()) {
     p.setTransition(multiply);
